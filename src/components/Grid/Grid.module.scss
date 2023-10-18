@@ -1,0 +1,26 @@
+.grid {
+  flex: 1;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+}
+
+.grid__container {
+}
+
+.grid__row {
+  display: flex;
+}
+
+.grid__cell {
+  background-color: #fff;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.grid__cell:hover {
+  background-color: #ccc;
+}
