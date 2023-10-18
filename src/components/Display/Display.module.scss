@@ -1,0 +1,17 @@
+.display {
+  &__container {
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    gap: 50px;
+  }
+
+  &__time {
+  }
+
+  &__error {
+  }
+
+  &__hint {
+  }
+}
