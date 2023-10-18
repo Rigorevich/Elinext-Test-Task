@@ -1,0 +1,10 @@
+.cell {
+  &__blocked {
+    background-color: #ccc !important;
+  }
+
+  &__start,
+  &__end {
+    background-color: #ec4343 !important;
+  }
+}
