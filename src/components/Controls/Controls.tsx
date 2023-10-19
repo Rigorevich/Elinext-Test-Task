@@ -7,9 +7,14 @@ import styled from "./Controls.module.scss";
 type ControlsProps = {
   mode?: TMode;
   setMode: React.Dispatch<React.SetStateAction<TMode | undefined>>;
+  handleClearClick: () => void;
 };
 
-export const Controls = ({ mode, setMode }: ControlsProps): JSX.Element => {
+export const Controls = ({
+  mode,
+  setMode,
+  handleClearClick,
+}: ControlsProps): JSX.Element => {
   const handleClickButton = (
     event: React.MouseEvent<HTMLButtonElement>
   ): void => {
@@ -35,6 +40,7 @@ export const Controls = ({ mode, setMode }: ControlsProps): JSX.Element => {
         >
           Установить начальную и конечную точки
         </Button>
+        <Button onClick={handleClearClick}>Сбросить</Button>
       </Container>
     </div>
   );

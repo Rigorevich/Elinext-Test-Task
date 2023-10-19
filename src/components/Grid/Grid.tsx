@@ -2,26 +2,23 @@ import { useCallback } from "react";
 
 import { Container } from "../Container";
 import { Cell } from "../Cell";
-import { useGrid } from "../../hooks";
-import type { TMode } from "../../App";
+import type { TMode, TGrid } from "../../types";
 
 import styled from "./Grid.module.scss";
 
-export type TGridCell = {
-  isBlocked: boolean;
-  isPoints: boolean;
+type GridProps = {
+  mode?: TMode;
+  grid: TGrid;
+  handleBlockedClick: (rowIndex: number, cellIndex: number) => void;
+  handlePointsClick: (rowIndex: number, cellIndex: number) => void;
 };
 
-export type TGrid = TGridCell[][];
-
-export type TPoints = {
-  start: number[];
-  end: number[];
-};
-
-export const Grid = ({ mode }: { mode?: TMode }): JSX.Element => {
-  const { grid, handleBlockedClick, handlePointsClick } = useGrid();
-
+export const Grid = ({
+  mode,
+  grid,
+  handleBlockedClick,
+  handlePointsClick,
+}: GridProps): JSX.Element => {
   const handleCellClick = useCallback(
     (rowIndex: number, cellIndex: number) => {
       switch (mode) {

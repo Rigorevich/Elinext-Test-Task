@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 
-import type { TGrid, TPoints } from "../components/Grid/Grid";
+import { gridCompletion } from "../utils/grid";
+import type { TGrid, TPoints } from "../types";
 
 export const useGrid = () => {
   const [grid, setGrid] = useState<TGrid>([]);
@@ -10,14 +11,7 @@ export const useGrid = () => {
   });
 
   useEffect(() => {
-    const newGrid: TGrid = [];
-    for (let i = 0; i < 20; i++) {
-      const row = [];
-      for (let j = 0; j < 20; j++) {
-        row.push({ isBlocked: false, isPoints: false });
-      }
-      newGrid.push(row);
-    }
+    const newGrid = gridCompletion();
     setGrid(newGrid);
   }, []);
 
@@ -63,7 +57,8 @@ export const useGrid = () => {
   );
 
   const handleClearClick = useCallback(() => {
-    setGrid([]);
+    const newGrid = gridCompletion();
+    setGrid(newGrid);
     setPoints({
       start: [],
       end: [],
