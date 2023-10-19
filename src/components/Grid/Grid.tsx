@@ -1,58 +1,44 @@
-import { useCallback, useEffect } from "react";
+import { memo } from "react";
 
 import { GRID_SIZE } from "../../constants";
 import { Container } from "../Container";
-import { Cell } from "../Cell";
-import { TMode, TGrid, EMode } from "../../types";
+import { CellHoc } from "../Cell";
 
 import styled from "./Grid.module.scss";
 
-type GridProps = {
-  mode?: TMode;
-  grid: TGrid;
-  handleBlockedClick: (rowIndex: number, columnIndex: number) => void;
-  handlePointsClick: (rowIndex: number, cellIndex: number) => void;
-};
+const grid = (() => {
+  const newGrid = [];
+  for (let row = 0; row < GRID_SIZE; row++) {
+    const rowArray = [];
+    for (let col = 0; col < GRID_SIZE; col++) {
+      rowArray.push(`${row}-${col}`);
+    }
+    newGrid.push(rowArray);
+  }
+  return newGrid;
+})();
 
-export const Grid = ({
-  mode,
-  grid,
-  handleBlockedClick,
-  handlePointsClick,
-}: GridProps): JSX.Element => {
-  const handleCellClick = useCallback(
-    (rowIndex: number, columnIndex: number) => {
-      switch (mode) {
-        case EMode.Points:
-          handlePointsClick(rowIndex, columnIndex);
-          break;
-        case EMode.Blocked:
-          handleBlockedClick(rowIndex, columnIndex);
-          break;
-        default:
-          return;
-      }
-    },
-    [handlePointsClick, handleBlockedClick, mode]
-  );
-
+export const Grid = memo((): JSX.Element => {
   return (
     <div className={styled.grid}>
       <Container className={styled.grid__container}>
-        {Object.keys(grid).length > 0 &&
-          Array.from({ length: GRID_SIZE }).map((_, rowIndex) => (
-            <div key={`row-${rowIndex}`} className={styled.grid__row}>
-              {Array.from({ length: GRID_SIZE }).map((_, columnIndex) => (
-                <Cell
-                  key={`cell-${rowIndex}-${columnIndex}`}
-                  className={styled.grid__cell}
-                  type={grid[`${rowIndex}-${columnIndex}`].type}
-                  onClick={() => handleCellClick(rowIndex, columnIndex)}
-                />
-              ))}
+        {grid.map((row, rowIndex) => {
+          return (
+            <div className={styled.grid__row} key={`row-${rowIndex}`}>
+              {row.map((_, columnIndex) => {
+                const key = `${rowIndex}-${columnIndex}`;
+                return (
+                  <CellHoc
+                    key={key}
+                    keyGrid={key}
+                    className={styled.grid__cell}
+                  />
+                );
+              })}
             </div>
-          ))}
+          );
+        })}
       </Container>
     </div>
   );
-};
+});
