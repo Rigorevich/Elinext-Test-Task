@@ -1,14 +1,17 @@
-import type { TGrid } from "../types/grid";
+import { GRID_SIZE } from "../constants";
+import { TGrid, EGridCellType } from "../types/grid";
 
 export const gridCompletion = () => {
-  const newGrid: TGrid = [];
-  for (let i = 0; i < 20; i++) {
-    const row = [];
-    for (let j = 0; j < 20; j++) {
-      row.push({ isBlocked: false, isPoints: false });
+  const initialGridState: TGrid = {};
+
+  for (let rowIndex = 0; rowIndex < GRID_SIZE; rowIndex++) {
+    for (let columnIndex = 0; columnIndex < GRID_SIZE; columnIndex++) {
+      const cellKey = `${rowIndex}-${columnIndex}`;
+      initialGridState[cellKey] = {
+        type: EGridCellType.None,
+      };
     }
-    newGrid.push(row);
   }
 
-  return newGrid;
+  return initialGridState;
 };

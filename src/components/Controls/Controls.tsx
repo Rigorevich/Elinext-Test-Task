@@ -1,6 +1,6 @@
 import { Container } from "../Container";
 import { Button } from "../Button";
-import type { TMode } from "../../App";
+import type { TMode } from "../../types";
 
 import styled from "./Controls.module.scss";
 
@@ -8,12 +8,14 @@ type ControlsProps = {
   mode?: TMode;
   setMode: React.Dispatch<React.SetStateAction<TMode | undefined>>;
   handleClearClick: () => void;
+  handleRouteClick: () => void;
 };
 
 export const Controls = ({
   mode,
   setMode,
   handleClearClick,
+  handleRouteClick,
 }: ControlsProps): JSX.Element => {
   const handleClickButton = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -25,7 +27,7 @@ export const Controls = ({
   return (
     <div className={styled.controls}>
       <Container className={styled.controls__container}>
-        <Button>Построить маршрут</Button>
+        <Button onClick={handleRouteClick}>Построить маршрут</Button>
         <Button
           data-mode="blocked"
           active={mode === "blocked"}

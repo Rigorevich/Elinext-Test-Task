@@ -1,24 +1,25 @@
 import cn from "classnames";
+import { memo } from "react";
 
-import type { TGridCell } from "../Grid";
+import { EGridCellType, TGridCell } from "../../types";
 
 import styled from "./Cell.module.scss";
 
 type CellProps = {
   className?: string;
   onClick: () => void;
-  cell: TGridCell;
+  type: TGridCell;
 };
 
-export const Cell = ({ className, cell, onClick }: CellProps): JSX.Element => {
-  const { isBlocked, isPoints } = cell;
+export const Cell = memo(
+  ({ className, type, onClick }: CellProps): JSX.Element => {
+    const styles: Record<string, boolean> = {
+      [styled.cell__blocked]: type === EGridCellType.Blocked,
+      [styled.cell__points]: type === EGridCellType.Points,
+    };
 
-  const styles: Record<string, TGridCell[keyof TGridCell]> = {
-    [styled.cell__blocked]: isBlocked,
-    [styled.cell__points]: isPoints,
-  };
-
-  return (
-    <div className={cn(styled.cell, className, styles)} onClick={onClick} />
-  );
-};
+    return (
+      <div className={cn(styled.cell, className, styles)} onClick={onClick} />
+    );
+  }
+);
