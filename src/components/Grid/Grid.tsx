@@ -1,58 +1,42 @@
-import { useState, useEffect } from "react";
+import { useCallback } from "react";
 
 import { Container } from "../Container";
 import { Cell } from "../Cell";
+import { useGrid } from "../../hooks";
 import type { TMode } from "../../App";
 
 import styled from "./Grid.module.scss";
 
 export type TGridCell = {
   isBlocked: boolean;
-  isStart: boolean;
-  isEnd: boolean;
+  isPoints: boolean;
 };
 
 export type TGrid = TGridCell[][];
 
-export const Grid = ({ mode }: { mode: TMode }): JSX.Element => {
-  const [grid, setGrid] = useState<TGrid>([]);
+export type TPoints = {
+  start: number[];
+  end: number[];
+};
 
-  useEffect(() => {
-    const newGrid: TGrid = [];
-    for (let i = 0; i < 20; i++) {
-      const row = [];
-      for (let j = 0; j < 20; j++) {
-        row.push({ isBlocked: false, isStart: false, isEnd: false });
+export const Grid = ({ mode }: { mode?: TMode }): JSX.Element => {
+  const { grid, handleBlockedClick, handlePointsClick } = useGrid();
+
+  const handleCellClick = useCallback(
+    (rowIndex: number, cellIndex: number) => {
+      switch (mode) {
+        case "points":
+          handlePointsClick(rowIndex, cellIndex);
+          break;
+        case "blocked":
+          handleBlockedClick(rowIndex, cellIndex);
+          break;
+        default:
+          return;
       }
-      newGrid.push(row);
-    }
-    setGrid(newGrid);
-  }, []);
-
-  const handleCellClick = (rowIndex: number, cellIndex: number) => {
-    switch (mode) {
-      case "start":
-        setGrid((prevGrid) => {
-          const newGrid = [...prevGrid];
-          newGrid[rowIndex][cellIndex].isStart = true;
-          return newGrid;
-        });
-        break;
-      case "end":
-        setGrid((prevGrid) => {
-          const newGrid = [...prevGrid];
-          newGrid[rowIndex][cellIndex].isEnd = true;
-          return newGrid;
-        });
-        break;
-      case "blocked":
-        setGrid((prevGrid) => {
-          const newGrid = [...prevGrid];
-          newGrid[rowIndex][cellIndex].isBlocked = true;
-          return newGrid;
-        });
-    }
-  };
+    },
+    [mode]
+  );
 
   return (
     <div className={styled.grid}>
