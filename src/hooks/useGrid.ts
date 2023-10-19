@@ -62,10 +62,19 @@ export const useGrid = () => {
     [grid, setGrid, setPoints]
   );
 
+  const handleClearClick = useCallback(() => {
+    setGrid([]);
+    setPoints({
+      start: [],
+      end: [],
+    });
+  }, [setGrid, setPoints]);
+
   return {
     grid,
     points,
     handleBlockedClick,
     handlePointsClick,
+    handleClearClick,
   };
 };
