@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { Container } from "../Container";
 import { Cell } from "../Cell";
-import type { TMode, TGrid } from "../../types";
+import { TMode, TGrid, EMode } from "../../types";
 
 import styled from "./Grid.module.scss";
 
@@ -22,10 +22,10 @@ export const Grid = ({
   const handleCellClick = useCallback(
     (rowIndex: number, cellIndex: number) => {
       switch (mode) {
-        case "points":
+        case EMode.Points:
           handlePointsClick(rowIndex, cellIndex);
           break;
-        case "blocked":
+        case EMode.Blocked:
           handleBlockedClick(rowIndex, cellIndex);
           break;
         default:
