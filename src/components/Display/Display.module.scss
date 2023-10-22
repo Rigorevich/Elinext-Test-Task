@@ -1,17 +1,21 @@
 .display {
+  background-color: #ae9e9e;
+
   &__container {
     display: flex;
     justify-items: center;
     align-items: center;
-    gap: 50px;
+    gap: 100px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #000;
+    font-size: 16px;
+    font-weight: 600;
   }
 
   &__time {
   }
 
   &__error {
-  }
-
-  &__hint {
   }
 }
