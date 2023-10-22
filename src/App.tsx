@@ -1,13 +1,12 @@
-import { useCallback, useState } from "react";
-
 import { Controls, Display, Grid } from "./components";
+import { GridProvider } from "./context/GridContext";
 
 export const App = (): JSX.Element => {
   return (
-    <>
-      {/* <Controls mode={mode} setMode={setMode} /> */}
+    <GridProvider>
+      <Controls />
       <Display />
       <Grid />
-    </>
+    </GridProvider>
   );
 };
