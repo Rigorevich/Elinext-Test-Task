@@ -1,9 +1,21 @@
 .cell {
-  &__blocked {
-    background-color: #ccc !important;
+  &__wall {
+    background-color: #423f3f !important;
   }
 
-  &__points {
+  &__start {
     background-color: #ec4343 !important;
+  }
+
+  &__finish {
+    background-color: #5fd055 !important;
+  }
+
+  &__path {
+    background-color: #357ae1 !important;
+  }
+
+  &__visited {
+    background-color: #aad1a6 !important;
   }
 }

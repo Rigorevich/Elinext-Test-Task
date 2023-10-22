@@ -1,52 +1,52 @@
-import { memo, useCallback, ComponentType } from "react";
+import { memo, useMemo, HTMLAttributes, ComponentType } from "react";
 import cn from "classnames";
 
 import { useGrid } from "../../hooks";
-import { EGridCellType, TGridCell } from "../../types";
+import { EGridCellType, TGridCell, TGridKey } from "../../types";
 
 import styled from "./Cell.module.scss";
 
-export type WithCellProps = {
-  keyGrid: string;
+export type CellHocProps = {
   className: string;
+  keyGrid: TGridKey;
 };
 
 export type CellProps = {
   className: string;
-  styles: Record<string, boolean>;
-  onClick: () => void;
+  type: TGridCell;
+} & HTMLAttributes<HTMLDivElement>;
+
+const withCellHOC = (Component: ComponentType<CellProps>) => {
+  return memo(({ className, keyGrid }: CellHocProps) => {
+    const { gridState, onClick, onMouseDown, onMouseUp, onMouseEnter } =
+      useGrid();
+
+    return (
+      <Component
+        type={gridState[keyGrid].type}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseEnter={() => onMouseEnter(keyGrid)}
+        onClick={() => onClick(keyGrid)}
+        className={className}
+      />
+    );
+  });
 };
 
-export function withCell<T extends CellProps>(
-  WrappedComponent: ComponentType<T>
-) {
-  return function WithCellComponent({ keyGrid, className }: WithCellProps) {
-    const { gridState, updateCell } = useGrid();
-    const type = gridState[keyGrid].type;
-
-    const onClick = useCallback(() => {
-      updateCell(keyGrid, EGridCellType.Blocked);
-    }, [updateCell]);
-
-    const styles: Record<string, boolean> = {
-      [styled.cell__blocked]: type === EGridCellType.Blocked,
-      [styled.cell__points]: type === EGridCellType.Points,
-    };
-
-    const combinedProps = {
-      onClick,
-      className,
-      styles,
-    } as T;
-
-    return <WrappedComponent {...combinedProps} />;
-  };
-}
-
-const Cell = memo(({ className, onClick, styles }: CellProps): JSX.Element => {
-  return (
-    <div className={cn(styled.cell, className, styles)} onClick={onClick} />
+const Cell = ({ className, type, ...rest }: CellProps): JSX.Element => {
+  const styles: Record<string, boolean> = useMemo(
+    () => ({
+      [styled.cell__wall]: type === EGridCellType.Wall,
+      [styled.cell__start]: type === EGridCellType.Start,
+      [styled.cell__finish]: type === EGridCellType.Finish,
+      [styled.cell__path]: type === EGridCellType.Path,
+      [styled.cell__visited]: type === EGridCellType.Visited,
+    }),
+    [type]
   );
-});
 
-export const CellHoc = withCell(Cell);
+  return <div className={cn(styled.cell, className, styles)} {...rest} />;
+};
+
+export const CellHOC = withCellHOC(Cell);

@@ -1,8 +1,9 @@
 import { memo } from "react";
 
+import { TGridKey } from "../../types";
 import { GRID_SIZE } from "../../constants";
 import { Container } from "../Container";
-import { CellHoc } from "../Cell";
+import { CellHOC } from "../Cell";
 
 import styled from "./Grid.module.scss";
 
@@ -26,12 +27,12 @@ export const Grid = memo((): JSX.Element => {
           return (
             <div className={styled.grid__row} key={`row-${rowIndex}`}>
               {row.map((_, columnIndex) => {
-                const key = `${rowIndex}-${columnIndex}`;
+                const key: TGridKey = `${rowIndex}-${columnIndex}`;
                 return (
-                  <CellHoc
+                  <CellHOC
                     key={key}
-                    keyGrid={key}
                     className={styled.grid__cell}
+                    keyGrid={key}
                   />
                 );
               })}

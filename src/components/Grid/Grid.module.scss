@@ -3,20 +3,25 @@
   display: flex;
   justify-items: center;
   align-items: center;
-  padding-bottom: 15px;
 }
 
 .grid__container {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
 }
 
 .grid__row {
+  min-width: 100%;
   display: flex;
 }
 
 .grid__cell {
   background-color: #fff;
-  width: 20px;
-  height: 20px;
+  flex-grow: 1;
+  height: 15px;
   border: 1px solid #000;
   cursor: pointer;
   transition: background-color 0.2s;
