@@ -1,96 +1,145 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 
-import { gridCompletion } from "../utils/grid";
-import { TGrid, TPoints, EGridCellType } from "../types";
+import { useParams } from "./useParams";
+import { BFS } from "../utils/BFS";
+import { getShortestPath } from "../utils/grid";
+import { EGridCellType, TGridCell, TGridKey } from "../types";
 
 export const useGrid = () => {
-  const [grid, setGrid] = useState<TGrid>({});
-  const [points, setPoints] = useState<TPoints>({
-    start: [],
-    end: [],
-  });
+  const {
+    gridState,
+    isVisualized,
+    setIsVisualized,
+    updateCell,
+    startPoint,
+    setStartPoint,
+    finishPoint,
+    setFinishPoint,
+    isMouseDown,
+    setIsMouseDown,
+    resetGrid,
+    setTime,
+    setError,
+  } = useParams();
 
-  useEffect(() => {
-    const initialGridState = gridCompletion();
-    setGrid(initialGridState);
-  }, []);
+  const onClick = useCallback(
+    (keyGrid: TGridKey) => {
+      if (isVisualized) {
+        return;
+      }
 
-  const updateCell = useCallback(
-    (rowIndex: number, columnIndex: number, type: EGridCellType) => {
-      const cellKey = `${rowIndex}-${columnIndex}`;
-      setGrid((prevGrid) => ({
-        ...prevGrid,
-        [cellKey]: {
-          type,
-        },
-      }));
+      if (gridState[keyGrid].type === EGridCellType.Wall) {
+        updateCell(keyGrid, EGridCellType.Default);
+        return;
+      }
+      if (keyGrid === startPoint) {
+        updateCell(keyGrid, EGridCellType.Default);
+        setStartPoint(null);
+        return;
+      }
+      if (keyGrid === finishPoint) {
+        updateCell(keyGrid, EGridCellType.Default);
+        setFinishPoint(null);
+        return;
+      }
+      if (startPoint && finishPoint) {
+        updateCell(keyGrid, EGridCellType.Wall);
+        return;
+      }
+      if (!startPoint) {
+        updateCell(keyGrid, EGridCellType.Start);
+        setStartPoint(keyGrid);
+      } else if (!finishPoint) {
+        updateCell(keyGrid, EGridCellType.Finish);
+        setFinishPoint(keyGrid);
+      }
     },
-    [setGrid]
+    [gridState, startPoint, finishPoint, updateCell, isVisualized]
   );
 
-  const handleBlockedClick = useCallback(
-    (rowIndex: number, cellIndex: number) => {
-      updateCell(rowIndex, cellIndex, EGridCellType.Blocked);
+  const onMouseEnter = useCallback(
+    (keyGrid: TGridKey) => {
+      if (isVisualized) return;
+      if (!isMouseDown) return;
+      if (keyGrid === startPoint || keyGrid === finishPoint) return;
+      const currentType =
+        gridState[keyGrid].type === EGridCellType.Wall
+          ? EGridCellType.Default
+          : EGridCellType.Wall;
+      updateCell(keyGrid, currentType);
     },
-    []
+    [isMouseDown, updateCell, isVisualized]
   );
 
-  // const handlePointsClick = useCallback(
-  //   (rowIndex: number, cellIndex: number) => {
-  //     setPoints((prevPoints) => {
-  //       const newPoints = { ...prevPoints };
+  const onMouseDown = useCallback(() => {
+    if (isVisualized) return;
+    setIsMouseDown(true);
+  }, [setIsMouseDown, isVisualized]);
 
-  //       if (newPoints.start.length === 0) {
-  //         newPoints.start = [rowIndex, cellIndex];
-  //       } else if (newPoints.end.length === 0) {
-  //         newPoints.end = [rowIndex, cellIndex];
-  //       } else {
-  //         if (
-  //           newPoints.start[0] === rowIndex &&
-  //           newPoints.start[1] === cellIndex
-  //         ) {
-  //           return newPoints;
-  //         }
+  const onMouseUp = useCallback(() => {
+    if (isVisualized) return;
+    setIsMouseDown(false);
+  }, [setIsMouseDown, isVisualized]);
 
-  //         const newGrid = [...grid];
-  //         newGrid[newPoints.end[0]][newPoints.end[1]].isPoints = false;
-  //         newPoints.end = [rowIndex, cellIndex];
-  //         setGrid(newGrid);
-  //       }
-
-  //       const newGrid = [...grid];
-  //       newGrid[rowIndex][cellIndex].isPoints = true;
-  //       setGrid(newGrid);
-  //       return newPoints;
-  //     });
-  //   },
-  //   [grid, setGrid, setPoints]
-  // );
-
-  const handlePointsClick = useCallback(() => {}, []);
-
-  const handleClearClick = useCallback(() => {
-    const newGrid = gridCompletion();
-    setGrid(newGrid);
-    setPoints({
-      start: [],
-      end: [],
-    });
-  }, [setGrid, setPoints]);
-
-  const handleRouteClick = useCallback(() => {
-    if (points.start.length === 0 || points.end.length === 0) {
-      alert("Начальная и конечная точки не выбраны");
+  const findPath = useCallback(() => {
+    if (isVisualized) {
+      setError("Путь уже построен, сбросьте путь перед построением нового");
       return;
     }
-  }, [points]);
+    setIsVisualized(true);
+
+    if (!startPoint || !finishPoint) {
+      setError("Отметьте начальную и конечную точку");
+      return;
+    }
+
+    setError(null);
+
+    const gridCopy = JSON.parse(JSON.stringify(gridState));
+
+    const [visitedCells, time] = BFS(gridCopy, startPoint, finishPoint);
+
+    setTime(time);
+
+    const updateCellWithDelay = (
+      key: TGridKey,
+      type: TGridCell,
+      delay: number
+    ) => {
+      setTimeout(() => {
+        updateCell(key, type);
+      }, delay);
+    };
+
+    visitedCells.forEach((key) => {
+      if (gridState[key].type === EGridCellType.Default) {
+        updateCellWithDelay(key, EGridCellType.Visited, 200);
+      }
+    });
+
+    const shortestPath = getShortestPath(gridCopy, finishPoint);
+
+    if (shortestPath.length === 0) {
+      setError("Путь не найден");
+      setIsVisualized(false);
+      return;
+    }
+
+    setIsVisualized(false);
+    shortestPath.forEach((key) => {
+      if (key !== startPoint) {
+        updateCellWithDelay(key, EGridCellType.Path, 500);
+      }
+    });
+  }, [startPoint, finishPoint, updateCell, gridState, setTime]);
 
   return {
-    grid,
-    points,
-    handleBlockedClick,
-    handleClearClick,
-    handleRouteClick,
-    handlePointsClick,
+    gridState,
+    onClick,
+    onMouseEnter,
+    onMouseDown,
+    onMouseUp,
+    findPath,
+    resetGrid,
   };
 };
