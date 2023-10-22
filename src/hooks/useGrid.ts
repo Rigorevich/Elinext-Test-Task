@@ -86,12 +86,13 @@ export const useGrid = () => {
       setError("Путь уже построен, сбросьте путь перед построением нового");
       return;
     }
-    setIsVisualized(true);
 
     if (!startPoint || !finishPoint) {
       setError("Отметьте начальную и конечную точку");
       return;
     }
+
+    setIsVisualized(true);
 
     setError(null);
 
