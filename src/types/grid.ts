@@ -1,16 +1,25 @@
 export enum EGridCellType {
-  Blocked = "blocked",
-  Points = "points",
-  None = "none",
+  Wall = "wall",
+  Start = "start",
+  Finish = "finish",
+  Path = "path",
+  Visited = "visited",
+  Default = "default",
 }
 
 export type TGridCell =
-  | EGridCellType.Blocked
-  | EGridCellType.Points
-  | EGridCellType.None;
+  | EGridCellType.Wall
+  | EGridCellType.Start
+  | EGridCellType.Finish
+  | EGridCellType.Path
+  | EGridCellType.Visited
+  | EGridCellType.Default;
+
+export type TGridKey = `${number}-${number}`;
 
 export type TGrid = {
-  [key: string]: {
+  [key: TGridKey]: {
     type: TGridCell;
+    previousCell?: TGridKey;
   };
 };
