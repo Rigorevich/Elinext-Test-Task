@@ -3,11 +3,11 @@ import { memo } from "react";
 import { TGridKey } from "../../types";
 import { GRID_SIZE } from "../../constants";
 import { Container } from "../Container";
-import { CellHOC } from "../Cell";
+import { Cell } from "../Cell";
 
 import styled from "./Grid.module.scss";
 
-const grid = (() => {
+const gridStatic = (() => {
   const newGrid = [];
   for (let row = 0; row < GRID_SIZE; row++) {
     const rowArray = [];
@@ -23,17 +23,13 @@ export const Grid = memo((): JSX.Element => {
   return (
     <div className={styled.grid}>
       <Container className={styled.grid__container}>
-        {grid.map((row, rowIndex) => {
+        {gridStatic.map((row, rowIndex) => {
           return (
             <div className={styled.grid__row} key={`row-${rowIndex}`}>
               {row.map((_, columnIndex) => {
                 const key: TGridKey = `${rowIndex}-${columnIndex}`;
                 return (
-                  <CellHOC
-                    key={key}
-                    className={styled.grid__cell}
-                    keyGrid={key}
-                  />
+                  <Cell key={key} keyGrid={key} className={styled.grid__cell} />
                 );
               })}
             </div>
