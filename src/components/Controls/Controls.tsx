@@ -1,27 +1,44 @@
+import { memo, useCallback } from "react";
+
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { findPath } from "../../store/thunks/gridThunk";
+import { resetGrid } from "../../store/slices/gridSlice";
 import { Container } from "../Container";
 import { Button } from "../Button";
-import { useGrid, useParams } from "../../hooks";
 
 import styled from "./Controls.module.scss";
 
-export const Controls = (): JSX.Element => {
-  const { findPath, resetGrid } = useGrid();
-  const { time, isVisualized } = useParams();
+export const Controls = memo((): JSX.Element => {
+  const inProgress = useAppSelector((state) => state.grid.inProgress);
+  const time = useAppSelector((state) => state.grid.time);
+
+  const dispatch = useAppDispatch();
+
+  const handleReset = useCallback(() => {
+    dispatch(resetGrid());
+  }, [dispatch]);
+
+  const handleFindPath = useCallback(() => {
+    dispatch(findPath());
+  }, [dispatch]);
 
   return (
     <div className={styled.controls}>
       <Container className={styled.controls__container}>
         <Button
-          typeStyle="secondary"
-          onClick={findPath}
-          disabled={isVisualized || typeof time === "number"}
+          disabled={inProgress || typeof time === "number"}
+          onClick={handleFindPath}
         >
           Построить маршрут
         </Button>
-        <Button onClick={resetGrid} disabled={isVisualized}>
+        <Button
+          typeStyle="secondary"
+          disabled={inProgress}
+          onClick={handleReset}
+        >
           Сбросить
         </Button>
       </Container>
     </div>
   );
-};
+});
