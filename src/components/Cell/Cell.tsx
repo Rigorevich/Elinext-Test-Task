@@ -1,40 +1,27 @@
-import { memo, useMemo, HTMLAttributes, ComponentType } from "react";
+import { memo, useMemo, useCallback } from "react";
 import cn from "classnames";
 
-import { useGrid } from "../../hooks";
-import { EGridCellType, TGridCell, TGridKey } from "../../types";
+import {
+  onClick,
+  onMouseDown,
+  onMouseUp,
+  onMouseEnter,
+} from "../../store/thunks/gridThunk";
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
+import { EGridCellType, TGridKey } from "../../types";
 
 import styled from "./Cell.module.scss";
 
-export type CellHocProps = {
-  className: string;
-  keyGrid: TGridKey;
-};
-
 export type CellProps = {
+  keyGrid: TGridKey;
   className: string;
-  type: TGridCell;
-} & HTMLAttributes<HTMLDivElement>;
-
-const withCellHOC = (Component: ComponentType<CellProps>) => {
-  return memo(({ className, keyGrid }: CellHocProps) => {
-    const { gridState, onClick, onMouseDown, onMouseUp, onMouseEnter } =
-      useGrid();
-
-    return (
-      <Component
-        type={gridState[keyGrid].type}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseEnter={() => onMouseEnter(keyGrid)}
-        onClick={() => onClick(keyGrid)}
-        className={className}
-      />
-    );
-  });
 };
 
-const Cell = ({ className, type, ...rest }: CellProps): JSX.Element => {
+export const Cell = memo(({ className, keyGrid }: CellProps): JSX.Element => {
+  const type = useAppSelector((state) => state.grid.grid[keyGrid].type);
+
+  const dispatch = useAppDispatch();
+
   const styles: Record<string, boolean> = useMemo(
     () => ({
       [styled.cell__wall]: type === EGridCellType.Wall,
@@ -46,7 +33,29 @@ const Cell = ({ className, type, ...rest }: CellProps): JSX.Element => {
     [type]
   );
 
-  return <div className={cn(styled.cell, className, styles)} {...rest} />;
-};
+  const handleClick = useCallback(() => {
+    dispatch(onClick(keyGrid));
+  }, [dispatch]);
 
-export const CellHOC = withCellHOC(Cell);
+  const handleMouseEnter = useCallback(() => {
+    dispatch(onMouseEnter(keyGrid));
+  }, [dispatch]);
+
+  const handleMouseDown = useCallback(() => {
+    dispatch(onMouseDown());
+  }, [dispatch]);
+
+  const handleMouseUp = useCallback(() => {
+    dispatch(onMouseUp());
+  }, [dispatch]);
+
+  return (
+    <div
+      className={cn(styled.cell, className, styles)}
+      onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseEnter={handleMouseEnter}
+    />
+  );
+});
