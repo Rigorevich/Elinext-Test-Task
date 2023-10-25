@@ -4,7 +4,7 @@ export const BFS = (
   grid: TGrid,
   startKey: TGridKey,
   finishKey: TGridKey
-): [TGridKey[], number] => {
+): number => {
   let startTime = performance.now();
   let endTime;
 
@@ -18,12 +18,12 @@ export const BFS = (
 
     if (!currentKey) {
       endTime = performance.now();
-      return [visitedCells, endTime - startTime];
+      return endTime - startTime;
     }
 
     if (currentKey === finishKey) {
       endTime = performance.now();
-      return [visitedCells, endTime - startTime];
+      return endTime - startTime;
     }
 
     visitedCells.push(currentKey);
@@ -51,5 +51,5 @@ export const BFS = (
   }
 
   endTime = performance.now();
-  return [visitedCells, endTime - startTime];
+  return endTime - startTime;
 };

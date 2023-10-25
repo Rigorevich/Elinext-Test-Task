@@ -1,6 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit";
 
-import { PATH_DELAY, SEARCH_DELAY } from "../../constants";
+import { PATH_DELAY } from "../../constants";
 import { TGridKey, TGridCell, EGridCellType } from "../../types";
 import { BFS, getShortestPath } from "../../utils";
 import { RootState } from "../store";
@@ -88,7 +88,7 @@ export const findPath =
 
     const gridCopy = JSON.parse(JSON.stringify(grid));
 
-    const [visitedCells, time] = BFS(gridCopy, startPoint, finishPoint);
+    const time = BFS(gridCopy, startPoint, finishPoint);
 
     dispatch(setTime(time));
 
@@ -104,12 +104,6 @@ export const findPath =
         }, delay);
       });
     };
-
-    visitedCells.forEach(async (key) => {
-      if (grid[key].type === EGridCellType.Default) {
-        await updateCellWithDelay(key, EGridCellType.Visited, SEARCH_DELAY);
-      }
-    });
 
     const shortestPath = getShortestPath(gridCopy, finishPoint);
 
