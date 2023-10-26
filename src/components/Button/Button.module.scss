@@ -32,6 +32,14 @@
     }
   }
 
+  &.tertiary {
+    background-color: #c36c6c;
+
+    &:hover {
+      background-color: #b28a8a;
+    }
+  }
+
   &:hover {
     background-color: #1ec691;
   }

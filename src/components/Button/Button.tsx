@@ -9,7 +9,7 @@ type NativeButton = Pick<
 >;
 
 type ButtonProps = {
-  typeStyle?: "primary" | "secondary";
+  typeStyle?: "primary" | "secondary" | "tertiary";
 } & NativeButton;
 
 export const Button = memo(
@@ -19,6 +19,7 @@ export const Button = memo(
         className={cn(styled.button, props.className, {
           [styled.primary]: typeStyle === "primary",
           [styled.secondary]: typeStyle === "secondary",
+          [styled.tertiary]: typeStyle === "tertiary",
         })}
         {...props}
       >

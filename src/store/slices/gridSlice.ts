@@ -1,10 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { gridCompletion } from "../../utils/grid";
-import type { TGrid, TGridKey, TGridCell } from "../../types";
+import {
+  type TGrid,
+  type TGridKey,
+  type TGridCell,
+  EGridCellType,
+} from "../../types";
 import type { RootState } from "../store";
 
-export type GridStore = {
+export type Gridstate = {
   grid: TGrid;
   startPoint: TGridKey | null;
   finishPoint: TGridKey | null;
@@ -16,7 +21,7 @@ export type GridStore = {
 
 const initialGridState: TGrid = gridCompletion();
 
-const initialState: GridStore = {
+const initialState: Gridstate = {
   grid: initialGridState,
   startPoint: null,
   finishPoint: null,
@@ -38,32 +43,47 @@ export const gridSlice = createSlice({
 
       state.grid[key] = { type };
     },
-    setInProgress: (state, action: PayloadAction<GridStore["inProgress"]>) => {
+    setInProgress: (state, action: PayloadAction<Gridstate["inProgress"]>) => {
       state.inProgress = action.payload;
     },
-    setTime: (state, action: PayloadAction<GridStore["time"]>) => {
+    setTime: (state, action: PayloadAction<Gridstate["time"]>) => {
       state.time = action.payload;
     },
-    setError: (state, action: PayloadAction<GridStore["error"]>) => {
+    setError: (state, action: PayloadAction<Gridstate["error"]>) => {
       state.error = action.payload;
     },
     setIsMouseDown: (
       state,
-      action: PayloadAction<GridStore["isMouseDown"]>
+      action: PayloadAction<Gridstate["isMouseDown"]>
     ) => {
       state.isMouseDown = action.payload;
     },
-    setStartPoint: (state, action: PayloadAction<GridStore["startPoint"]>) => {
+    setStartPoint: (state, action: PayloadAction<Gridstate["startPoint"]>) => {
       state.startPoint = action.payload;
     },
     setFinishPoint: (
       state,
-      action: PayloadAction<GridStore["finishPoint"]>
+      action: PayloadAction<Gridstate["finishPoint"]>
     ) => {
       state.finishPoint = action.payload;
     },
     resetGrid: (state) => {
       state.grid = initialGridState;
+      state.time = null;
+      state.error = null;
+      state.startPoint = null;
+      state.finishPoint = null;
+    },
+    resetPath: (state) => {
+      Object.keys(state.grid).forEach((key) => {
+        if (
+          key === state.finishPoint ||
+          key === state.startPoint ||
+          state.grid[key as TGridKey].type === EGridCellType.Path
+        ) {
+          state.grid[key as TGridKey].type = EGridCellType.Default;
+        }
+      });
       state.time = null;
       state.error = null;
       state.startPoint = null;
@@ -81,6 +101,7 @@ export const {
   setInProgress,
   setTime,
   setError,
+  resetPath,
 } = gridSlice.actions;
 
 export const selectGrid = (state: RootState) => state.grid;

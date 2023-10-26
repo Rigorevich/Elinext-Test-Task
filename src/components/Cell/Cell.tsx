@@ -28,7 +28,6 @@ export const Cell = memo(({ className, keyGrid }: CellProps): JSX.Element => {
       [styled.cell__start]: type === EGridCellType.Start,
       [styled.cell__finish]: type === EGridCellType.Finish,
       [styled.cell__path]: type === EGridCellType.Path,
-      [styled.cell__visited]: type === EGridCellType.Visited,
     }),
     [type]
   );
